@@ -1,0 +1,9 @@
+replicaCount: 1
+image:
+  repository: kondensmelkcr.azurecr.io/nginx-image
+  tag: v3
+
+service:
+  port: 80
+  targetport: 80
+  type: LoadBalancer
