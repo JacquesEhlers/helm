@@ -1,0 +1,29 @@
+name: Package and Push Helm Chart to Azure Container Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  package-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Setup Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: 'latest'
+
+    - name: Package Helm chart
+      run: |
+        helm package test1
+    
+    - name: Push Helm chart to Azure Container Registry
+      run: |
+        az acr helm push test1.tgz --name kondensmelkcr 
+      env:
+        AZURE_CR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
