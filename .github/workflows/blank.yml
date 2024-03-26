@@ -18,12 +18,19 @@ jobs:
       with:
         version: 'latest'
 
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: <your-acr-name>.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+    
     - name: Package Helm chart
       run: |
-        helm package test1
+        helm package <path-to-your-chart-directory>
     
     - name: Push Helm chart to Azure Container Registry
       run: |
-        az acr helm push test1.tgz --name kondensmelkcr 
+        az acr helm push <chart-name>.tgz --name <your-acr-name>
       env:
         AZURE_CR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
