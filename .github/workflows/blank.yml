@@ -1,4 +1,4 @@
-name: Package and Push Helm Chart to Azure Container Registry
+name: Helm Chart Deployment
 
 on:
   push:
@@ -6,31 +6,30 @@ on:
       - main
 
 jobs:
-  package-and-push:
+  build:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Setup Helm
+    - name: Set up Helm
       uses: azure/setup-helm@v1
       with:
-        version: 'latest'
-
+        version: '3.0.0'
+    
     - name: Login to Azure Container Registry
       uses: azure/docker-login@v1
       with:
-        login-server: <your-acr-name>.azurecr.io
+        login-server: kondensmelkcr.azurecr.io
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
     
-    - name: Package Helm chart
+    - name: Package Helm Chart
       run: |
-        helm package <path-to-your-chart-directory>
+        helm package ./test1
+        helm repo index ./ --url https://kondensmelkcr.azurecr.io/helm/v1
     
-    - name: Push Helm chart to Azure Container Registry
+    - name: Push Helm Chart to Azure Container Registry
       run: |
-        az acr helm push <chart-name>.tgz --name <your-acr-name>
-      env:
-        AZURE_CR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+        helm push --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }} ./test1 kondensmelkcr.azurecr.io/helm/v1
