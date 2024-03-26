@@ -32,4 +32,12 @@ jobs:
     
     - name: Push Helm Chart to Azure Container Registry
       run: |
-        helm push --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }} ./test1 kondensmelkcr.azurecr.io/helm/v1
+        az acr helm push ./test1.tar.gz --force -n kondensmelkcr
+    
+    - name: Update Helm Chart Repository
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add .
+        git commit -m "Update Helm Chart Repository"
+        git push
